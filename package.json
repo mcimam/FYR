@@ -1,0 +1,16 @@
+{
+  "name": "fyr",
+  "version": "1.0.0",
+  "description": "crawler web",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "knex": "^2.4.2",
+    "puppeteer": "^20.1.1",
+    "tedious": "^16.0.0"
+  }
+}
