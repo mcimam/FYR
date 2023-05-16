@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+const { SetRegistry, ValueRegistry } = require('./helper');
 const { Crawler } = require('./main');
 
 const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -7,9 +8,8 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
 (async () => {
   try {
     const crawler = await Crawler.build()
-    const browser = crawler.browser
-    
     const page = await crawler.page_sellercenter()
+    const setRegister = new SetRegistry('productList')
 
     page.setViewport({
         height: 1000,
@@ -21,8 +21,8 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
     await page.waitForSelector('.arco-table-body')
     const product_tds = await page.$$("tr[class='arco-table-tr']")
 
-
     for (const product_td of product_tds){
+        const register = new ValueRegistry()
         // console.log(product_td)
         let product_id = await product_td.$("td:nth-child(3) > div > span > div > div:nth-child(2) > div:nth-child(2) > span ")
         if(product_id){
@@ -30,16 +30,17 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
                 element => element.innerHTML.split(':').pop(0),
                 product_id
             )
-            console.log(txt)
+            register.addValue("pid",txt,true)
         }
-
         
-        // await page.evaluateHandle
+        setRegister.append(register)
     }
 
 
     await delay(500)
     page.close()
+    setRegister.saveJson()
+    await setRegister.saveCSV()
     console.log("finish")
   
       
