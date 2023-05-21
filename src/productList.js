@@ -26,7 +26,7 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
         // console.log(product_td)
         let product_id = await product_td.$("td:nth-child(3) > div > span > div > div:nth-child(2) > div:nth-child(2) > span ")
         if(product_id){
-            const txt = await page. evaluate(
+            const txt = await page.evaluate(
                 element => element.innerHTML.split(':').pop(0),
                 product_id
             )

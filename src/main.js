@@ -8,7 +8,7 @@ class Crawler {
         this.pass = ""
         this.url = ""
         // this.auth = 'brd-customer-hl_062ce0fd-zone-scraping_browser:ibjuogydndx4';
-        this.wsSocket = process.env.WS || 'ws://127.0.0.1:9222/devtools/browser/3ac651fc-6076-490a-9aeb-e1251251101e'
+        this.wsSocket = process.env.WS || 'ws://127.0.0.1:9222/devtools/browser/e5087a00-4e35-4859-bdf1-4e0e0d176ee3'
     }    
 
     static async build() {

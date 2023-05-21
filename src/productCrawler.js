@@ -10,9 +10,42 @@ async function getOrCrawlPID(){
     let data =  set_register.getJson()
     
     if(set_register.isEmpty()){
-      // TODO: Call List Crawler
+      set_register.value = [
+        new ValueRegistry({pid: '1729591730322114915'}),
+        new ValueRegistry({pid: '1729384826618807651'}),
+        new ValueRegistry({pid: '1729384826784679267'}),
+        new ValueRegistry({pid: '1729446137053940067'}),
+        new ValueRegistry({pid: '1729384826539050339'}),
+        new ValueRegistry({pid: '1729446148541286755'}),
+        new ValueRegistry({pid: '1729446145884129635'}),
+        new ValueRegistry({pid: '1729446146862844259'}),
+        new ValueRegistry({pid: '1729572668134689123'}),
+        new ValueRegistry({pid: '1729384826605503843'}),
+        new ValueRegistry({pid: '1729579700097419619'}),
+        new ValueRegistry({pid: '1729572656444246371'}),
+        new ValueRegistry({pid: '1729598930902878563'}),
+        new ValueRegistry({pid: '1729572661860010339'}),
+        new ValueRegistry({pid: '1729384826829178211'}),
+        new ValueRegistry({pid: '1729384099869918563'}),
+        new ValueRegistry({pid: '1729384826658653539'}),
+        new ValueRegistry({pid: '1729572646214928739'}),
+        new ValueRegistry({pid: '1729570347504077155'}),
+        new ValueRegistry({pid: '1729570350754466147'}),
+        new ValueRegistry({pid: '1729591703049046371'}),
+        new ValueRegistry({pid: '1729602060183636323'}),
+        new ValueRegistry({pid: '1729599927414196579'}),
+        new ValueRegistry({pid: '1729560417953417571'}),
+        new ValueRegistry({pid: '1729384825576457571'}),
+        new ValueRegistry({pid: '1729384826782713187'}),
+        new ValueRegistry({pid: '1729384826640958819'}),
+        new ValueRegistry({pid: '1729384826505758051'}),
+        new ValueRegistry({pid: '1729384826470761827'}),
+        new ValueRegistry({pid: '1729582571228072291'}),
+        new ValueRegistry({pid: '1729502781415852387'}),
+        new ValueRegistry({pid: '1729502795450845539'}),
+      ]
+      data = set_register.value
     }
-
     return data
 }
 
@@ -67,6 +100,8 @@ async function crawlProductDetail(browser, pid){
   // - assume that this selector select (key,value) in order
   // - If this loop detect key, next loop get value with check if it's actually a value
   const register = new ValueRegistry()
+  register.addValue("pid", pid)
+  console.log(register)
 
   //  Revenue
   await page.click('.relative.flex-1:nth-child(1)')
@@ -85,7 +120,7 @@ async function crawlProductDetail(browser, pid){
 }
 
 (async() => {
-  const set_register = new SetRegistry('productDetails')
+  const set_register = new SetRegistry('/product/productAnalysis')
   const crawler = await Crawler.build()
   const browser = crawler.browser
 
@@ -95,55 +130,12 @@ async function crawlProductDetail(browser, pid){
     const pid = product.getValue("pid")
     if(pid == null) {continue;}
     const productData = await crawlProductDetail(browser,pid);
+    console.log('get data for product : '+ pid)
     set_register.append(productData)
   }
-
+  console.log(set_register)
   set_register.saveJson()
   await set_register.saveCSV()
+  console.log("==FINISH==")
 
 })();
-
-// (async () => {
-//   try {
-//     const setRegister = new SetRegistry('productDetails')
-//     const browser = crawler.browser
-//     const crawler = await Crawler.build()
-//     const page = await crawler.page_sellercenter()
-
-//     page.setViewport({
-//         height: 1000,
-//         width: 950
-//     })
-
-//     await page.goto('https://seller-id.tiktok.com/product')
-
-//     // GET OR CRAWL PID
-
-//     await page.waitForSelector('.arco-table-body')
-//     const product_tds = await page.$$("tr[class='arco-table-tr']")
-
-//     for (const product_td of product_tds){
-//         // console.log(product_td)
-//         let product_id = await product_td.$("td:nth-child(3) > div > span > div > div:nth-child(2) > div:nth-child(2) > span ")
-//         if(product_id){
-//             const txt = await page. evaluate(
-//                 element => element.innerHTML.split(':').pop(0),
-//                 product_id
-//             )
-//             console.log(txt)
-//         }
-
-        
-//         // await page.evaluateHandle
-//     }
-
-
-//     await delay(500)
-//     page.close()
-//     console.log("finish")
-  
-      
-//   } catch (error) {
-//     console.error(error)      
-//   }
-// })();

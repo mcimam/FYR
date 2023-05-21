@@ -9,10 +9,11 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
 class ValueRegistry {
     constructor(value = {}) {
         this.value = (typeof value === 'object') ? value : {}
-        this.activeKey = ''
+        this._activeKey = ''
 
         // Set PK
         this.value['_id'] = Math.random().toString(16).slice(2)
+        this.id = this.value['_id']
     }
 
     getValue(key){
@@ -21,20 +22,20 @@ class ValueRegistry {
 
     // Register key and keep it active till value/ new key is set
     registerKey(key, upsert = false) {
-        this.activeKey = ''
+        this._activeKey = ''
         // Don't replace new key if not upsert
         if (!upsert && (key in this.value)) {
             return;
         }
-        this.activeKey = key
+        this._activeKey = key
 
     }
 
     registerValue(value) {
-        if(this.activeKey) { 
-            this.value[this.activeKey] = this.convertValue(value) 
+        if(this._activeKey) { 
+            this.value[this._activeKey] = this.convertValue(value) 
         }
-        this.activeKey = null
+        this._activeKey = null
     }
    
     
