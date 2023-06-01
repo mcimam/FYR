@@ -1,5 +1,5 @@
 const puppeteer = require('puppeteer');
-const { Crawler } = require('./main');
+const { Crawler } = require('./crawler');
 
 const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
@@ -7,7 +7,7 @@ async function showModal(page, selector){
   page.click()
 }
 
-export const getVideoData = async () => {
+const getVideoData = async () => {
   try {
     const crawler = await Crawler.build()
     const browser = crawler.browser
@@ -29,14 +29,12 @@ export const getVideoData = async () => {
     await page.waitForSelector('.zep-modal-content')
 
     await page.$$eval('label.zep-checkbox', elements => elements.map(element => {
-        console.log(element.querySelector('input.zep-checkbox-input').checked)
         if(!element.querySelector('input.zep-checkbox-input').checked){
          element.click() 
         }
     }))
     await page.click('xpath/' + "//button[contains(., 'Save')]")
     await delay(500)
-    console.log("-- Set Metrics")
 
     // Download File
     const client = await page.target().createCDPSession()
@@ -50,14 +48,16 @@ export const getVideoData = async () => {
       await delay(500)
       await page.click('xpath/' + "//button/span[contains(., 'Export')]")
       await delay(1000)
-      console.log("-- Downloading File")  
     } catch (error) {
-      console.error('Failed to download csv')
+      console.error('Video Data: Failed to download csv')
     }
 
-    console.log("== FINSIH LIVE CRAWL ==")
     page.close()
   } catch (error) {
     console.error(error)      
   }
 };
+
+module.exports = {
+  getVideoData
+}

@@ -1,11 +1,11 @@
 const puppeteer = require('puppeteer');
 const { SetRegistry, ValueRegistry } = require('./helper');
-const { Crawler } = require('./main');
+const { Crawler } = require('./crawler');
 
 const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
   
 
-const getProductList = async () => {
+const getProductList = async (crawler) => {
   try {
     const crawler = await Crawler.build()
     const page = await crawler.page_sellercenter()
@@ -23,7 +23,7 @@ const getProductList = async () => {
 
     for (const product_td of product_tds){
         const register = new ValueRegistry()
-        // console.log(product_td)
+
         let product_id = await product_td.$("td:nth-child(3) > div > span > div > div:nth-child(2) > div:nth-child(2) > span ")
         if(product_id){
             const txt = await page.evaluate(
@@ -41,10 +41,14 @@ const getProductList = async () => {
     page.close()
     setRegister.saveJson()
     await setRegister.saveCSV()
-    console.log("finish")
-  
+    
+    return setRegister
       
   } catch (error) {
-    console.error(error)      
+    throw new Error(error)
   }
 };
+
+module.exports = {
+  getProductList
+}

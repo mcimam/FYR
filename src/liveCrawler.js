@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 const { ValueRegistry, SetRegistry } = require('./helper');
-const { Crawler } = require('./main');
+const { Crawler } = require('./crawler');
 
 const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
@@ -24,7 +24,7 @@ async function getDataOverview(page) {
   
       register.addValue(cid, txt)        
     } catch (error) {
-      console.log(`can't get data for ${cid}`)
+      console.warn(`can't get data for ${cid}`)
       console.warn(error)
     }
   }
@@ -32,7 +32,7 @@ async function getDataOverview(page) {
   return register
 }
 
-export const getLiveData = async() => {
+const getLiveData = async() => {
   try {
     const crawler = await Crawler.build()
     const browser = crawler.browser
@@ -60,7 +60,6 @@ export const getLiveData = async() => {
     //   await page.click('span[aria-label=Close]')
       
     // } catch (error) {
-    //   console.log("Can't get overview data")
     //   console.error(error)
     // }
 
@@ -72,12 +71,10 @@ export const getLiveData = async() => {
     //   trafic_register.append(promoted_trafic_data)
     //   await page.click('span[aria-label=Close]')
     // } catch (error) {
-    //   console.log("Can't get overview data")
     //   console.error(error)
     // }
     // trafic_register.saveJson()
     // trafic_register.saveCSV()
-    // console.log("-- Get Overview")
     // await delay(2000)
 
     //Get Livestream data
@@ -86,14 +83,12 @@ export const getLiveData = async() => {
     await page.waitForSelector('.zep-modal-content')
 
     await page.$$eval('label.zep-checkbox', elements => elements.map(element => {
-        console.log(element.querySelector('input.zep-checkbox-input').checked)
         if(!element.querySelector('input.zep-checkbox-input').checked){
          element.click() 
         }
     }))
     await page.click('xpath/' + "//button[contains(., 'Save')]")
     await delay(500)
-    console.log("-- Set Metrics")
 
     // Download File
     const client = await page.target().createCDPSession()
@@ -107,14 +102,16 @@ export const getLiveData = async() => {
       await delay(500)
       await page.click('xpath/' + "//button/span[contains(., 'Export')]")
       await delay(1000)
-      console.log("-- Downloading File")  
     } catch (error) {
-      console.error('Failed to download csv')
+      console.error('Live Data: Failed to download csv')
     }
 
-    console.log("== FINSIH LIVE CRAWL ==")
     page.close()
   } catch (error) {
     console.error(error)      
   }
 };
+
+module.exports = {
+  getLiveData
+}

@@ -2,7 +2,7 @@
 
 const puppeteer = require('puppeteer');
 const { SetRegistry,ValueRegistry, delay } = require('./helper');
-const { Crawler } = require('./main');
+const { Crawler } = require('./crawler');
   
 
 async function getOrCrawlPID(){
@@ -101,7 +101,6 @@ async function crawlProductDetail(browser, pid){
   // - If this loop detect key, next loop get value with check if it's actually a value
   const register = new ValueRegistry()
   register.addValue("pid", pid)
-  console.log(register)
 
   //  Revenue
   await page.click('.relative.flex-1:nth-child(1)')
@@ -130,12 +129,8 @@ async function crawlProductDetail(browser, pid){
     const pid = product.getValue("pid")
     if(pid == null) {continue;}
     const productData = await crawlProductDetail(browser,pid);
-    console.log('get data for product : '+ pid)
     set_register.append(productData)
   }
-  console.log(set_register)
   set_register.saveJson()
   await set_register.saveCSV()
-  console.log("==FINISH==")
-
 })();

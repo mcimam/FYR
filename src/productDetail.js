@@ -34,7 +34,7 @@ const productList = [
 ]
 
 const puppeteer = require('puppeteer');
-const { Crawler } = require('./main');
+const { Crawler } = require('./crawler');
 const { ValueRegistry, SetRegistry, delay } = require('./helper')
 
 // Just function to loping data
@@ -115,14 +115,19 @@ const getProductDetail = async () => {
     
     for (const pid of productList){
       // TODO: Make multiple page functional
-
-      const data = await crawlProductDetail(browser, pid)
-      setRegister.append(data)
+      try {
+        const data = await crawlProductDetail(browser, pid)
+        setRegister.append(data)          
+      } catch (error) {
+        console.error(error)
+      }
   
     }
 
     setRegister.saveJson()
     await setRegister.saveCSV()
+
+    return setRegister
 
       
   } catch (error) {
@@ -130,3 +135,7 @@ const getProductDetail = async () => {
   } 
 
 };
+
+module.exports = {
+  getProductDetail
+}

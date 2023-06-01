@@ -118,7 +118,7 @@ class SetRegistry {
             if(path != ''){
                 path += '/'
             }
-            if(this.filename[0] != '/'){
+            if(path == '' && this.filename[0] != '/'){
                 path += '.'
             }
             path += `${this.filename}.json`
