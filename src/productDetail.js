@@ -87,21 +87,26 @@ async function crawlProductDetail(browser, pid){
   // - If this loop detect key, next loop get value with check if it's actually a value
   const register = new ValueRegistry()
 
-  // Add Product Info
-  register.addValue("pid", pid)
+  try {
+    // Add Product Info
+    register.addValue("pid", pid)
 
-  //  Revenue
-  await page.click('.relative.flex-1:nth-child(1)')
-  await getData(page, register)
-  
-  await page.click('.relative.flex-1:nth-child(2)')
-  await getData(page, register)
+    //  Revenue
+    await page.click('.relative.flex-1:nth-child(1)')
+    await getData(page, register)
+    
+    await page.click('.relative.flex-1:nth-child(2)')
+    await getData(page, register)
 
-  await page.click('.relative.flex-1:nth-child(3)')
-  await getData(page, register)
+    await page.click('.relative.flex-1:nth-child(3)')
+    await getData(page, register)    
+  } catch (error) {
+    console.warn(error)
+  }
+
+
 
   page.close()
-
   return register
 
 }

@@ -47,7 +47,7 @@ const getVideoData = async () => {
     try {
       await delay(500)
       await page.click('xpath/' + "//button/span[contains(., 'Export')]")
-      await delay(1000)
+      await delay(process.env.LOADTM)
     } catch (error) {
       console.error('Video Data: Failed to download csv')
     }

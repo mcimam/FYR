@@ -101,9 +101,14 @@ const getLiveData = async() => {
     try {
       await delay(500)
       await page.click('xpath/' + "//button/span[contains(., 'Export')]")
-      await delay(1000)
+      await delay(process.env.LOADTM)
+      // await page.click('#GEC-main > div.layout__extContent--8qEB0.flex.flex-col.gap-16 > div.flex.gap-16 > div.layout__app--Uq7qR.layout__extApp---5X1m > div.layout__marginTopForTopNav--G7srI.flex.flex-col.w-full.h-full > div > div > div:nth-child(5) > div.flex.justify-between > div.flex.items-center.gap-8 > div.flex.gap-8 > button')
+      // await delay(500)
+      // await page.click('xpath/' + "//button[contains(., 'Download')]")
+      console.log("-- Downloading File")
     } catch (error) {
       console.error('Live Data: Failed to download csv')
+      console.error(error)
     }
 
     page.close()
