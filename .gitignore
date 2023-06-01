@@ -2,3 +2,4 @@ node_modules/
 result/
 user_data/
 .vscode/
+.env

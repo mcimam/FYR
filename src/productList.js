@@ -5,11 +5,11 @@ const { Crawler } = require('./main');
 const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
   
 
-(async () => {
+const getProductList = async () => {
   try {
     const crawler = await Crawler.build()
     const page = await crawler.page_sellercenter()
-    const setRegister = new SetRegistry('productList')
+    const setRegister = new SetRegistry('product/productList')
 
     page.setViewport({
         height: 1000,
@@ -47,4 +47,4 @@ const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, mil
   } catch (error) {
     console.error(error)      
   }
-})();
+};

@@ -12,8 +12,10 @@ class ValueRegistry {
         this._activeKey = ''
 
         // Set PK
-        this.value['_id'] = Math.random().toString(16).slice(2)
-        this.id = this.value['_id']
+        if(this.value['_id'] != undefined){
+            this.value['_id'] = Math.random().toString(16).slice(2)
+            this.id = this.value['_id']     
+        }
     }
 
     getValue(key){
@@ -81,14 +83,17 @@ class SetRegistry {
 
     constructor(name){
         this.value = []
-        this.saveLocation = process.env.SAVELOC || '/home/mcimam/PersonalProject/Fyr/result'
+        this.rawValue = []
+        this.saveLocation = process.env.SAVELOC
         this.filename = name
-        this.jr = new JsonRecords(`${this.saveLocation}/${this.filename}.json`)
+        this.path = ''
+        this.loadJson()
     }
 
     append(value){
         if(typeof value !== 'object') { throw new Error('Value must be ValueRegistry Instance')}
         this.value.push(value)
+        this.rawValue.push(value.value)
     }
 
     getValue() {
@@ -96,10 +101,38 @@ class SetRegistry {
         for (const val of this.value) {
             arr.push(val.value)
         }
+        this.rawValue = arr
         return arr
     }
     resetJson() {
         this.jr.remove()
+    }
+
+    loadJson(){
+        // This is for loading json file
+        let path = ''
+        if(this.saveLocation != undefined){
+            path = this.saveLocation
+        }
+        if(this.filename != '' && this.filename != undefined){
+            if(path != ''){
+                path += '/'
+            }
+            if(this.filename[0] != '/'){
+                path += '.'
+            }
+            path += `${this.filename}.json`
+        }
+
+        this.path = path
+        this.jr = new JsonRecords(path)
+
+        // Load JR to ValueRegistry
+        const allRecords = this.jr.get()
+        for(const record of allRecords) {
+            const val = new ValueRegistry(record)
+            this.value.push(val)
+        }
     }
 
     saveJson(){

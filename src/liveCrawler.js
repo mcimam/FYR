@@ -32,7 +32,7 @@ async function getDataOverview(page) {
   return register
 }
 
-(async () => {
+export const getLiveData = async() => {
   try {
     const crawler = await Crawler.build()
     const browser = crawler.browser
@@ -49,36 +49,36 @@ async function getDataOverview(page) {
     await page.waitForSelector('table')
     await delay(5000)
 
-    // Get Today Overview
-    // const today_overview_data = new ValueRegistry()
-    const trafic_register = new SetRegistry('/live/liveOverview')
-    // Organic Trafic Detail
-    try {
-      await page.click('#live_traffic_table > div > div:nth-child(2) > div > div > div > div > div > div > table > tbody > tr:first-child > td:nth-child(9) > div',)
-      organic_trafic_data = await getDataOverview(page)
-      trafic_register.append(organic_trafic_data)
-      await page.click('span[aria-label=Close]')
+    // // Get Today Overview
+    // // const today_overview_data = new ValueRegistry()
+    // const trafic_register = new SetRegistry('live/liveOverview')
+    // // Organic Trafic Detail
+    // try {
+    //   await page.click('#live_traffic_table > div > div:nth-child(2) > div > div > div > div > div > div > table > tbody > tr:first-child > td:nth-child(9) > div',)
+    //   organic_trafic_data = await getDataOverview(page)
+    //   trafic_register.append(organic_trafic_data)
+    //   await page.click('span[aria-label=Close]')
       
-    } catch (error) {
-      console.log("Can't get overview data")
-      console.error(error)
-    }
+    // } catch (error) {
+    //   console.log("Can't get overview data")
+    //   console.error(error)
+    // }
 
-    await delay(1000)
-    // Promoted trafic detail
-    try {
-      await page.click('#live_traffic_table > div > div:nth-child(2) > div > div > div > div > div > div > table > tbody > tr:last-child > td:nth-child(9) > div',)
-      promoted_trafic_data = await getDataOverview(page)
-      trafic_register.append(promoted_trafic_data)
-      await page.click('span[aria-label=Close]')
-    } catch (error) {
-      console.log("Can't get overview data")
-      console.error(error)
-    }
-    trafic_register.saveJson()
-    trafic_register.saveCSV()
-    console.log("-- Get Overview")
-    await delay(2000)
+    // await delay(1000)
+    // // Promoted trafic detail
+    // try {
+    //   await page.click('#live_traffic_table > div > div:nth-child(2) > div > div > div > div > div > div > table > tbody > tr:last-child > td:nth-child(9) > div',)
+    //   promoted_trafic_data = await getDataOverview(page)
+    //   trafic_register.append(promoted_trafic_data)
+    //   await page.click('span[aria-label=Close]')
+    // } catch (error) {
+    //   console.log("Can't get overview data")
+    //   console.error(error)
+    // }
+    // trafic_register.saveJson()
+    // trafic_register.saveCSV()
+    // console.log("-- Get Overview")
+    // await delay(2000)
 
     //Get Livestream data
     // Checklist all metrix
@@ -95,25 +95,26 @@ async function getDataOverview(page) {
     await delay(500)
     console.log("-- Set Metrics")
 
-    // TODO: Crawl From Table
-
     // Download File
     const client = await page.target().createCDPSession()
     await client.send('Page.setDownloadBehavior', {
       behavior: 'allow',
-      downloadPath: process.env.SAVELOC || '/home/mcimam/PersonalProject/Fyr/result/live',
+      downloadPath: process.env.SAVELOC + '/live',
     });
 
     // Download by click export
-    await delay(500)
-    await page.click('#GEC-main > div.pb-16 > div:nth-child(3) > div:last-child > div.flex.justify-between > div.flex.items-center.gap-8 > div.flex.gap-8 > div > button')
-    await delay(500)
-    await page.click('xpath/' + "//button[contains(., 'Download')]")
-    console.log("-- Downloading File")
+    try {
+      await delay(500)
+      await page.click('xpath/' + "//button/span[contains(., 'Export')]")
+      await delay(1000)
+      console.log("-- Downloading File")  
+    } catch (error) {
+      console.error('Failed to download csv')
+    }
 
     console.log("== FINSIH LIVE CRAWL ==")
     page.close()
   } catch (error) {
     console.error(error)      
   }
-})();
+};

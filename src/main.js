@@ -1,5 +1,7 @@
 const puppeteer = require('puppeteer');
+const dotenv = require('dotenv');
 
+dotenv.config();
 const delay = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
 class Crawler {

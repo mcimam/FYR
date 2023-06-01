@@ -107,7 +107,7 @@ async function crawlProductDetail(browser, pid){
 }
 
 
-(async () => {
+const getProductDetail = async () => {
   try {
     const setRegister = new SetRegistry('productDetails')
     const crawler = await Crawler.build()
@@ -129,6 +129,4 @@ async function crawlProductDetail(browser, pid){
     console.error(error)      
   } 
 
-
-  process.exit()
-})();
+};
