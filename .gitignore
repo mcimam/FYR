@@ -3,3 +3,6 @@ result/
 user_data/
 .vscode/
 .env
+
+.pyc
+.sqlite
