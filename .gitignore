@@ -4,5 +4,5 @@ user_data/
 .vscode/
 .env
 
-.pyc
-.sqlite
+*.pyc
+*.sqlite
