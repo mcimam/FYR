@@ -2,6 +2,14 @@ from models import *
 from crawler import TiktokAnalyticAuto
 
 @orm.db_session
+def logFile(name, type):
+    if not isinstance(name, str):
+        return False
+    
+    fl = FileLog(name=name, type=type)
+    orm.commit()
+    return fl
+
 def crawl_tiktok():
     # Tiktok analysis will generate file
     # We then register each file inside logs
@@ -11,17 +19,19 @@ def crawl_tiktok():
     pws.loginSellerCenter()
 
     lf = pws.liveAnalysis()
-    FileLog(name=lf, type='video')
+    logFile(name=lf, type='video')
 
     vf = pws.videoAnalysis()
-    FileLog(name=vf, type='live')
+    logFile(name=vf, type='live')
 
     pf = pws.productAnalysis()
-    FileLog(name=pf, type='sale')
+    logFile(name=pf, type='sale')
     
     mfs = pws.marketingAnaylisis()
     for mf in mfs:
-        FileLog(name=mf, type='marketing')
+        logFile(name=mf, type='marketing')
+    
+    pws.cleanPages()
 
     del pws
 
@@ -31,3 +41,4 @@ if __name__ == "__main__":
     # Setup lof db
     db_setup(mode='dev')
     crawl_tiktok()
+    
