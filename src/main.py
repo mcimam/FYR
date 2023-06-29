@@ -1,5 +1,7 @@
 from models import *
 from crawler import TiktokAnalyticAuto
+import logging
+logging.basicConfig(format='[%(levelname)s] %(asctime)s - %(message)s', filename='../info.log')
 
 @orm.db_session
 def logFile(name, type):
@@ -13,8 +15,7 @@ def logFile(name, type):
 def crawl_tiktok():
     # Tiktok analysis will generate file
     # We then register each file inside logs
-    print('START')    
-
+    
     pws = TiktokAnalyticAuto(save_path='/home/mcimam/PersonalProject/Fyr/result',mode='dev')
     pws.loginSellerCenter()
 

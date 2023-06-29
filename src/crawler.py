@@ -1,13 +1,14 @@
 from playwright.sync_api import sync_playwright
 from uuid import uuid4
 import re
+import logging
 
 class SkipCrawlException(Exception):
     pass
 
 class TiktokAnalyticAuto:
-    def __init__(self,save_path='./', mode='dev', no_download=False) -> None:
-        print('start')
+    def __init__(self,save_path='./', mode='dev', no_download=False, auth_state=None) -> None:
+        logging.info('Create Playwright instance')
         self.pw = sync_playwright().start()
         
         # self param
@@ -21,14 +22,19 @@ class TiktokAnalyticAuto:
             self.default_context = self.browser.contexts[0]
             self.contexts = [self.default_context]
         else:
-            self.browser = self.pw.chromium.launch_persistent_context('/home/mcimam/PersonalProject/Fyr/browser_context',headless=False)
+            self.browser = self.pw.chromium.launch(headless=False)
             self.default_context = self.browser.new_context()
             self.contexts = [self.default_context]
+            
+        if auth_state:
+            self.default_context = self.browser.new_context(storage_state=auth_state)
+            
+            
         
         self.active_page = None
     
     def __del__(self) -> None:
-        print('finish')
+        logging.info('Delete playwright instance')
         if self.mode != 'dev':
             self.browser.close()
             
@@ -45,7 +51,7 @@ class TiktokAnalyticAuto:
         page.wait_for_timeout(1000)
         if page.url != 'https://seller-id.tiktok.com/account/login':
             page.close()
-            print('already login')
+            logging.info('Already Login')
             return
         
         page.wait_for_selector('button')
@@ -53,7 +59,7 @@ class TiktokAnalyticAuto:
         page.wait_for_selector('button')
         page.locator('#auth-btn').click()
         page.wait_for_timeout(1000)
-        print('login')
+        logging.info('Log In')
         page.close()
         
     def _downloadReport(self, page=None, filename=None):
@@ -95,10 +101,10 @@ class TiktokAnalyticAuto:
             download = download_info.value
     
         except SkipCrawlException as err:
-            print(err)
+            logging.error(err)
         
         except:
-            print('retry download')
+            logging.info('retry download')
             with page.expect_download() as download_info:
             
                 list_button = page.locator("div").filter(has_text=re.compile(r"^Export")).get_by_role("button").nth(1)
@@ -113,11 +119,10 @@ class TiktokAnalyticAuto:
             filename = download.suggested_filename
                 
         download.save_as(f"{self.sp}/{filename}")
-        print('download success')                    
+        logging.info(f'Download "{filename}" Success')
 
-    
     def videoAnalysis(self):
-        print('start video analysis')
+        logging.info("Start video analysis")
         page = self.createPage()
         page.goto('https://seller-id.tiktok.com/compass/video-analytics')
         page.wait_for_selector('table')
@@ -129,15 +134,15 @@ class TiktokAnalyticAuto:
             self._downloadReport(page, fn)
             rslt = fn
         except Exception as err:
-            print('Failed to download')        
-            print(err)
+            logging.error('Failed to download')
+            logging.error(err)
                   
         page.close()
             
         return rslt
         
     def liveAnalysis(self):
-        print('start live analysis')
+        logging.info('Start live analysis')
         page = self.createPage()
         page.goto('https://seller-id.tiktok.com/compass/live-analysis')
         page.wait_for_selector('table')
@@ -152,15 +157,15 @@ class TiktokAnalyticAuto:
             self._downloadReport(page, fn)
             rslt = fn
         except Exception as err:
-            print('Failed to download')        
-            print(err)
+            logging.error('Failed to download')
+            logging.error(err)
                     
         page.close()
             
         return rslt
         
     def productAnalysis(self):
-        print('start product analysis')
+        logging.info('Start product analysis')
         page = self.createPage()
         page.goto('https://seller-id.tiktok.com/compass/product-analysis')
         page.wait_for_selector('table')
@@ -171,15 +176,15 @@ class TiktokAnalyticAuto:
             self._downloadReport(page, fn)
             rslt = fn
         except Exception as err:
-            print('Failed to download')        
-            print(err)
+            logging.error('Failed to download')
+            logging.error(err)
 
         page.close()
             
         return rslt
         
     def marketingAnaylisis(self):
-        print('start marketing analysis')
+        logging.info('Start marketing analysis')
         page = self.createPage()
         page.goto('https://seller-id.tiktok.com/compass/promotion-analytics')
         page.wait_for_selector('table')
@@ -196,8 +201,8 @@ class TiktokAnalyticAuto:
                 self._downloadReport(page, fn)
                 rslt.append(fn)
             except Exception as err:
-                print('Failed to download')        
-                print(err)
+                logging.error('Failed to download')
+                logging.error(err)
                 
         page.close()
         
@@ -210,15 +215,27 @@ class TiktokAnalyticAuto:
                 continue
             page.close()
             
+    def saveAuthState(self, username, password, path):
+        logging.info('Start save auth state')
+        page = self.createPage()
+        page.goto('https://www.tiktok.com/login/phone-or-email/email')
+        page.get_by_placeholder("Email or username").fill(username)
+        page.get_by_placeholder("Password").fill(password)
+        page.get_by_role("button", name="Log in").click()
+        logging.warning('Please Solve Captcha')
+        page.wait_for_timeout(20000)
+        page.context.storage_state(path=path)       
+        page.close()
         
-    
-if __name__ == "__main__":
-    pws = TiktokAnalyticAuto(save_path='/home/mcimam/PersonalProject/Fyr/result',mode='prod')
-    pws.loginSellerCenter()
-    # pws.liveAnalysis()
-    # pws.videoAnalysis()
-    # pws.productAnalysis()
-    # pws.marketingAnaylisis()
-    # pws.cleanPages()
-    del pws
-    print('DONE')
+    def testAuthState(self):
+        logging.debug('Test login page')
+        page = self.createPage()
+        page.goto('https://www.tiktok.com')
+        page.pause()
+        page.wait_for_timeout(5000)
+        if page.url == 'https://www.tiktok.com':
+            page.close()
+            logging.debug('Test Result True')
+            return True
+        page.close()
+        return False

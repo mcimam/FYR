@@ -18,6 +18,9 @@ class Creator(db.Entity):
     name = orm.Optional(str)
     nickname = orm.Optional(str)
     live_ids =  orm.Set("LiveData")  
+    video_ids = orm.Set("VideoData")
+    create_at = orm.Required(datetime, default=lambda: datetime.now())
+    
     
 class LiveData(db.Entity):
     id = orm.PrimaryKey(int, auto=True)
@@ -46,30 +49,103 @@ class LiveData(db.Entity):
     share = orm.Optional(int)
     like = orm.Optional(int)
     new_follower = orm.Optional(int)
-  
+    create_at = orm.Required(datetime, default=lambda: datetime.now())
+    
+    
+class Product(db.Entity):
+    id = orm.PrimaryKey(int,auto=False, size=64)
+    name = orm.Required(str)
+    data_ids = orm.Set("ProductData")
+    video_data_ids = orm.Set("VideoData")
+    create_at = orm.Required(datetime, default=lambda: datetime.now())
+    
+
+class ProductData(db.Entity):
+    id = orm.PrimaryKey(int, auto=True)
+    product = orm.Required(Product)
+    revenue = orm.Optional(int)
+    buyer =orm.Optional(int)
+    sale = orm.Optional(int)
+    order = orm.Optional(int)
+    # Livestream source
+    live_buyer =orm.Optional(int)
+    live_sale = orm.Optional(int)
+    live_viewer = orm.Optional(int)
+    live_click = orm.Optional(int)
+    live_impression = orm.Optional(int)
+    live_ctr = orm.Optional(float)
+    live_co = orm.Optional(float)
+    # Video source
+    video_buyer =orm.Optional(int)
+    video_sale = orm.Optional(int)
+    video_viewer = orm.Optional(int)
+    video_click = orm.Optional(int)
+    video_impression = orm.Optional(int)
+    video_ctr = orm.Optional(float)
+    video_co = orm.Optional(float)
+    create_at = orm.Required(datetime, default=lambda: datetime.now())
+    
+
+
+class Video(db.Entity):
+    id = orm.PrimaryKey(int,auto=False, size=64)
+    info = orm.Required(str)  
+    data_ids = orm.Set("VideoData")
+    create_at = orm.Required(datetime, default=lambda: datetime.now())
+    
+
 
 class VideoData(db.Entity):
     id = orm.PrimaryKey(int, auto=True)
-
+    creator_id = orm.Required(Creator)
+    video_id = orm.Optional(Video)
+    time = orm.Optional(datetime)
+    product = orm.Optional(Product)
+    revenue = orm.Optional(int)
+    buyer =orm.Optional(int)
+    sale = orm.Optional(int)
+    order = orm.Optional(int)
+    commission = orm.Optional(int)
+    refund = orm.Optional(int)
+    product_refund = orm.Optional(int)
+    co = orm.Optional(float)
+    ctr = orm.Optional(float)
+    vv = orm.Optional(int)
+    like = orm.Optional(int)
+    comment = orm.Optional(int)
+    share = orm.Optional(int)
+    impression = orm.Optional(int)
+    click = orm.Optional(int)
+    new_follower = orm.Optional(int)
+    create_at = orm.Required(datetime, default=lambda: datetime.now())
+    
+    
 class SaleData(db.Entity):
     id = orm.PrimaryKey(int, auto=True)
-
-class ProductData(db.Entity):
-    id = orm.PrimaryKey(int, auto=False)
+    create_at = orm.Required(datetime, default=lambda: datetime.now())
+    
     
 class MarketingData(db.Entity):
     id = orm.PrimaryKey(int, auto=True)
+    create_at = orm.Required(datetime, default=lambda: datetime.now())
+    
 
 
 def db_setup(mode=None):
     ''' setup db connection
         :param mode dev,None   
     '''
+    # if db.provider is not None:
+    #     return db
+    
     if mode == 'dev':
         db.bind(provider='sqlite', filename='db.sqlite', create_db=True)
-        # orm.set_sql_debug(True)
+        orm.pony.options.CUT_TRACEBACK = False
+        #orm.set_sql_debug(True)
     else:
         db.bind(provider='postgres', user='mcimam', password='root', host='194', database='')
+
+
 
     db.generate_mapping(create_tables=True)
     return db
