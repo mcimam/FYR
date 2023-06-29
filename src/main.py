@@ -1,3 +1,4 @@
+from config
 from models import *
 from crawler import TiktokAnalyticAuto
 import logging
@@ -16,7 +17,9 @@ def crawl_tiktok():
     # Tiktok analysis will generate file
     # We then register each file inside logs
     
-    pws = TiktokAnalyticAuto(save_path='/home/mcimam/PersonalProject/Fyr/result',mode='dev')
+    pws = TiktokAnalyticAuto(save_path='../result',mode='dev')
+    if not pws.testAuthState():
+        pws.saveAuthState(username=)
     pws.loginSellerCenter()
 
     lf = pws.liveAnalysis()

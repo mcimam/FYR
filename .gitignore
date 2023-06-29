@@ -9,3 +9,5 @@ __pycache__/
 
 *.pyc
 *.sqlite
+
+/src/config.py
