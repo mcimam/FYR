@@ -1,8 +1,11 @@
 from config import MODE, TT_UNAME, TT_PASSW
 from models import *
 from crawler import TiktokAnalyticAuto
+from pathlib import Path
 import logging
 logging.basicConfig(format='[%(levelname)s] %(asctime)s - %(message)s', level=logging.INFO)
+
+abs_path = Path(__file__).parent.absolute()
 
 @orm.db_session
 def logFile(name, type):
@@ -18,11 +21,11 @@ def crawl_tiktok():
     # We then register each file inside logs
     logging.info('Start Crawling')
     
-    pws = TiktokAnalyticAuto(save_path='../result',mode=MODE)
+    pws = TiktokAnalyticAuto(save_path=f'{abs_path}/../result',mode=MODE)
     if not pws.testAuthState():
-        pws.saveAuthState(username=TT_UNAME,password=TT_PASSW, path='../playwright/state.json')
+        pws.saveAuthState(username=TT_UNAME,password=TT_PASSW, path=f'{abs_path}/../playwright/state.json')
     else:
-        pws.default_context = pws.browser.new_context(storage_state='../playwright/state.json')
+        pws.default_context = pws.browser.new_context(storage_state=f'{abs_path}/../playwright/state.json')
         
     pws.loginSellerCenter()
 

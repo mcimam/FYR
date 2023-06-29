@@ -1,9 +1,10 @@
 import sys
 import os
 import logging
+from pathlib import Path
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
-abs_path = os.getcwd()
+abs_path = Path(__file__).parent.absolute()
 
 
 # create playwright dictionary
