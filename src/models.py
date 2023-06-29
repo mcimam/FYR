@@ -1,5 +1,7 @@
+from config import DB_HOST,DB_NAME,DB_PASS,DB_USER
 from pony import orm
 from datetime import datetime
+import logging
 
 db = orm.Database()
 
@@ -143,9 +145,9 @@ def db_setup(mode=None):
         orm.pony.options.CUT_TRACEBACK = False
         #orm.set_sql_debug(True)
     else:
-        db.bind(provider='postgres', user='mcimam', password='root', host='194', database='')
-
-
+        logging.info(f'Binding database {DB_HOST} ')
+        db.bind(provider='postgres', user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
+        logging.info('Bind database success')
 
     db.generate_mapping(create_tables=True)
     return db

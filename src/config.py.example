@@ -1,3 +1,11 @@
-username = ''
-password = ''
+MODE = 'prod' #prod ordev
 
+# Titkok Credential
+TT_UNAME = '' #tiktok account
+TT_PASSW = '' #tiktok password
+
+# Database User
+DB_USER = ''
+DB_PASS = ''
+DB_HOST = ''
+DB_NAME = ''

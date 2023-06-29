@@ -1,8 +1,8 @@
-from config
+from config import MODE, TT_UNAME, TT_PASSW
 from models import *
 from crawler import TiktokAnalyticAuto
 import logging
-logging.basicConfig(format='[%(levelname)s] %(asctime)s - %(message)s', filename='../info.log')
+logging.basicConfig(format='[%(levelname)s] %(asctime)s - %(message)s', level=logging.INFO)
 
 @orm.db_session
 def logFile(name, type):
@@ -19,7 +19,10 @@ def crawl_tiktok():
     
     pws = TiktokAnalyticAuto(save_path='../result',mode='dev')
     if not pws.testAuthState():
-        pws.saveAuthState(username=)
+        pws.saveAuthState(username=TT_UNAME,password=TT_PASSW, path='../playwright/state.json')
+    else:
+        pws.default_context = pws.browser.new_context(storage_state='../playwright/state.json')
+        
     pws.loginSellerCenter()
 
     lf = pws.liveAnalysis()
@@ -36,13 +39,15 @@ def crawl_tiktok():
         logFile(name=mf, type='marketing')
     
     pws.cleanPages()
+    logging.info('Finish')
 
     del pws
 
-    print('DONE')    
-
+ 
 if __name__ == "__main__":
+    logging.info('Start')
     # Setup lof db
-    db_setup(mode='dev')
+    logging.info(f'Init DB Setup {MODE}')
+    db_setup(mode=MODE)
     crawl_tiktok()
     
