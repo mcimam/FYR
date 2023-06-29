@@ -1,4 +1,4 @@
-from config import DB_HOST,DB_NAME,DB_PASS,DB_USER
+from config import DB_HOST,DB_NAME,DB_PASS,DB_USER,DB_PORT
 from pony import orm
 from datetime import datetime
 import logging
@@ -146,7 +146,7 @@ def db_setup(mode=None):
         #orm.set_sql_debug(True)
     else:
         logging.info(f'Binding database {DB_HOST} ')
-        db.bind(provider='postgres', user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME)
+        db.bind(provider='postgres', user=DB_USER, password=DB_PASS, host=DB_HOST, database=DB_NAME, port=DB_PORT)
         logging.info('Bind database success')
 
     db.generate_mapping(create_tables=True)

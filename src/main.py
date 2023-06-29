@@ -16,8 +16,9 @@ def logFile(name, type):
 def crawl_tiktok():
     # Tiktok analysis will generate file
     # We then register each file inside logs
+    logging.info('Start Crawling')
     
-    pws = TiktokAnalyticAuto(save_path='../result',mode='dev')
+    pws = TiktokAnalyticAuto(save_path='../result',mode=MODE)
     if not pws.testAuthState():
         pws.saveAuthState(username=TT_UNAME,password=TT_PASSW, path='../playwright/state.json')
     else:
@@ -39,7 +40,7 @@ def crawl_tiktok():
         logFile(name=mf, type='marketing')
     
     pws.cleanPages()
-    logging.info('Finish')
+    logging.info('Finish Crawling')
 
     del pws
 
