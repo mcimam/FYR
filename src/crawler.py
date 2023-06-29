@@ -231,7 +231,6 @@ class TiktokAnalyticAuto:
         logging.debug('Test login page')
         page = self.createPage()
         page.goto('https://www.tiktok.com')
-        page.pause()
         page.wait_for_timeout(5000)
         if page.url == 'https://www.tiktok.com':
             page.close()
