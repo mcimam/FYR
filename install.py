@@ -35,3 +35,5 @@ if os.path.exists('./requirements.txt'):
 logging.info('-----------------------------------')
 logging.info('Finish Installing Crawler')
 logging.info('-----------------------------------')
+logging.info('To start appliaction, please run python src/main.py')
+logging.info('-----------------------------------')

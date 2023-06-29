@@ -1,3 +1,4 @@
+import os
 from config import MODE, TT_UNAME, TT_PASSW
 from models import *
 from crawler import TiktokAnalyticAuto
@@ -22,10 +23,11 @@ def crawl_tiktok():
     logging.info('Start Crawling')
     
     pws = TiktokAnalyticAuto(save_path=f'{abs_path}/../result',mode=MODE)
+    if os.path.exists(abs_path+'/playwright/state.json'):
+        pws.default_context = pws.browser.new_context(storage_state=f'{abs_path}/../playwright/state.json')
+        
     if not pws.testAuthState():
         pws.saveAuthState(username=TT_UNAME,password=TT_PASSW, path=f'{abs_path}/../playwright/state.json')
-    else:
-        pws.default_context = pws.browser.new_context(storage_state=f'{abs_path}/../playwright/state.json')
         
     pws.loginSellerCenter()
 
