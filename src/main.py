@@ -21,9 +21,12 @@ def crawl_tiktok():
     # Tiktok analysis will generate file
     # We then register each file inside logs
     logging.info('Start Crawling')
-    
+    logging.info(f'ABS PATH : {abs_path}')
+
     pws = TiktokAnalyticAuto(save_path=f'{abs_path}/../result',mode=MODE)
-    if os.path.exists(abs_path+'/playwright/state.json'):
+
+    if os.path.exists(f'{abs_path}/../playwright/state.json'):
+        logging.info('Try to use exsisting context')
         pws.default_context = pws.browser.new_context(storage_state=f'{abs_path}/../playwright/state.json')
         
     if not pws.testAuthState():
