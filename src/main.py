@@ -23,14 +23,16 @@ def crawl_tiktok():
     logging.info('Start Crawling')
     logging.info(f'ABS PATH : {abs_path}')
 
-    pws = TiktokAnalyticAuto(save_path=f'{abs_path}/../result',mode=MODE)
-
-    if os.path.exists(f'{abs_path}/../playwright/state.json'):
+    state_path = f'{abs_path}/../playwright/state.json'
+    if os.path.exists(state_path):
         logging.info('Try to use exsisting context')
-        pws.default_context = pws.browser.new_context(storage_state=f'{abs_path}/../playwright/state.json')
+        pws = TiktokAnalyticAuto(save_path=f'{abs_path}/../result',mode=MODE, auth_state=state_path)
+    else:
+        pws = TiktokAnalyticAuto(save_path=f'{abs_path}/../result',mode=MODE)
+
         
-    if not pws.testAuthState():
-        pws.saveAuthState(username=TT_UNAME,password=TT_PASSW, path=f'{abs_path}/../playwright/state.json')
+    if not pws.isAuthState():
+        pws.saveAuthState(username=TT_UNAME,password=TT_PASSW, path=state_path)
         
     pws.loginSellerCenter()
 

@@ -29,9 +29,8 @@ class TiktokAnalyticAuto:
         if auth_state:
             self.default_context = self.browser.new_context(storage_state=auth_state)
             
-            
-        
         self.active_page = None
+        self.createPage()
     
     def __del__(self) -> None:
         logging.info('Delete playwright instance')
@@ -227,12 +226,12 @@ class TiktokAnalyticAuto:
         page.context.storage_state(path=path)       
         page.close()
         
-    def testAuthState(self):
+    def isAuthState(self):
         logging.debug('Test login page')
         page = self.createPage()
-        page.goto('https://www.tiktok.com')
-        page.wait_for_timeout(5000)
-        if page.url == 'https://www.tiktok.com':
+        page.goto('https://www.tiktok.com/')
+        page.wait_for_timeout(1000)
+        if page.url == 'https://www.tiktok.com/':
             page.close()
             logging.debug('Test Result True')
             return True
