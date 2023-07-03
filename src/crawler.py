@@ -22,15 +22,15 @@ class TiktokAnalyticAuto:
             self.default_context = self.browser.contexts[0]
             self.contexts = [self.default_context]
         else:
-            self.browser = self.pw.chromium.launch(headless=False)
-            self.default_context = self.browser.new_context()
+            self.browser = self.pw.chromium.launch_persistent_context('/home/mcimam/snap/chromium/common/chromium/Default', headless=False, accept_downloads=True)
+            self.default_context = self.browser 
+            # self.default_context = self.browser.new_context()
             self.contexts = [self.default_context]
             
-        if auth_state:
-            self.default_context = self.browser.new_context(storage_state=auth_state)
+        # if auth_state:
+        #     self.default_context = self.browser.new_context(storage_state=auth_state)
             
         self.active_page = None
-        self.createPage()
     
     def __del__(self) -> None:
         logging.info('Delete playwright instance')
@@ -40,6 +40,7 @@ class TiktokAnalyticAuto:
         self.pw.stop()
    
     def createPage(self) -> object:
+        logging.info('Create new page')
         page =  self.default_context.new_page()
         self.active_page = page
         return page
@@ -57,17 +58,28 @@ class TiktokAnalyticAuto:
         page.get_by_role("button", name="Log in with TikTok account").click()
         page.wait_for_selector('button')
         page.locator('#auth-btn').click()
-        page.wait_for_timeout(1000)
-        logging.info('Log In')
-        page.close()
-        
-    def _downloadReport(self, page=None, filename=None):
+        try:
+            page.wait_for_url("**/homepage*")
+        finally:
+            logging.info('Log In')
+            page.close()
+ 
+    def _downloadReport(self, page=None, filename=None, language='en'):
         if not page:
             page = self.active_page
     
         page.wait_for_timeout(500)
 
-        metrics_button = page.locator('xpath=//button[contains(., "Metrics")]')
+        if language=='id':
+            text_metrics = 'Metrik'
+            text_metrics_save = 'Simpan'
+            text_download = 'Unduh'
+        else:
+            text_metrics = 'Metrics'
+            text_metrics_save = 'Save'
+            text_download = 'Export'
+
+        metrics_button = page.locator(f'xpath=//button[contains(., {text_metrics})]')
         if metrics_button.is_visible():
             metrics_button.click()
             page.wait_for_selector('.zep-modal-content', timeout=1000)
@@ -77,7 +89,7 @@ class TiktokAnalyticAuto:
                 if not element.query_selector('input.zep-checkbox-input').is_checked():
                     element.click()
         
-            save_button = page.locator(('xpath=//button[contains(., "Save")]'))
+            save_button = page.locator((f'xpath=//button[contains(., "{text_metrics_save}")]'))
             if not save_button.is_disabled():
                 save_button.click()
             else:
@@ -87,7 +99,7 @@ class TiktokAnalyticAuto:
             page.wait_for_timeout(500)            
         
         try:
-            export_button = page.get_by_role("button", name="Export")
+            export_button = page.get_by_role("button", name=text_download)
             
             if export_button.is_disabled():
                 raise SkipCrawlException('Export Button Is Disabled') 
@@ -229,9 +241,9 @@ class TiktokAnalyticAuto:
     def isAuthState(self):
         logging.debug('Test login page')
         page = self.createPage()
-        page.goto('https://www.tiktok.com/')
+        page.goto('https://www.tiktok.com/setting')
         page.wait_for_timeout(1000)
-        if page.url == 'https://www.tiktok.com/':
+        if page.url == 'https://www.tiktok.com/setting':
             page.close()
             logging.debug('Test Result True')
             return True

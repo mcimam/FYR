@@ -29,12 +29,13 @@ def crawl_tiktok():
         pws = TiktokAnalyticAuto(save_path=f'{abs_path}/../result',mode=MODE, auth_state=state_path)
     else:
         pws = TiktokAnalyticAuto(save_path=f'{abs_path}/../result',mode=MODE)
-
-        
-    if not pws.isAuthState():
+    
+    auth_state = pws.isAuthState()
+    if not auth_state:
         pws.saveAuthState(username=TT_UNAME,password=TT_PASSW, path=state_path)
         
     pws.loginSellerCenter()
+    pws.changeLanguage()
 
     lf = pws.liveAnalysis()
     logFile(name=lf, type='video')
